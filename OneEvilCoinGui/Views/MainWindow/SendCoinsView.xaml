@@ -1,0 +1,136 @@
+﻿<UserControl x:Class="OneEvil.OneEvilCoinGUI.Views.MainWindow.SendCoinsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:objects="clr-namespace:OneEvil.OneEvilCoinGUI"
+             xmlns:controls="clr-namespace:OneEvil.OneEvilCoinGUI.Controls"
+             xmlns:views="clr-namespace:OneEvil.OneEvilCoinGUI.Views.MainWindow"
+             mc:Ignorable="d"
+             d:DesignWidth="700">
+    <UserControl.DataContext>
+        <views:SendCoinsViewModel x:Name="ViewModel"/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <Style x:Key="StyleListBoxItemSelectionHidden" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Grid.IsSharedSizeScope="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+            <ColumnDefinition Width="Auto" SharedSizeGroup="A"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="19"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="8"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="19"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="14" LastChildFill="True" Margin="5 0 5 8">
+            <TextBlock>
+                <TextBlock Text="{Binding Path=SendCoinsCurrentBalance, Source={StaticResource Resources}}"/>
+                <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{x:Static objects:StaticObjects.StringFormatCoinBalance}">
+                            <Binding Path="BalanceSpendable" Converter="{StaticResource ConverterCoinAtomicValueToNullableDisplayValue}"/>
+                            <Binding Path="TextCurrencyCode" Source="{StaticResource Resources}"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </TextBlock>
+
+            <TextBlock HorizontalAlignment="Right">
+                <TextBlock Text="{Binding Path=SendCoinsEstimatedNewBalance, Source={StaticResource Resources}}"/>
+                <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{x:Static objects:StaticObjects.StringFormatCoinBalance}">
+                            <Binding Path="BalanceNewEstimated" Converter="{StaticResource ConverterCoinDisplayValueToNullableDisplayValue}">
+                                <Binding.ValidationRules>
+                                    <objects:ValidationRuleCoinDisplayValueNonNegative ValidatesOnTargetUpdated="True"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                            <Binding Path="TextCurrencyCode" Source="{StaticResource Resources}"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </TextBlock>
+        </DockPanel>
+
+        <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="14" x:Name="ListBoxRecipients" ItemsSource="{Binding Path=Recipients, IsAsync=True}" IsSynchronizedWithCurrentItem="True" ScrollViewer.CanContentScroll="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0 0 0 8">
+            <ListBox.Resources>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource StyleListBoxItemSelectionHidden}"/>
+            </ListBox.Resources>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.MaxWidth>
+                            <Binding Path="ActualWidth" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollContentPresenter}}"/>
+                        </Grid.MaxWidth>
+
+                        <Border BorderBrush="{StaticResource {x:Static SystemColors.ControlDarkBrushKey}}" BorderThickness="1" Margin="1 6 3 6">
+                            <controls:CoinSender Margin="10"/>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="14" LastChildFill="True">
+            <TextBlock Text="{Binding Path=TextPaymentId, Source={StaticResource Resources}}" VerticalAlignment="Center" Margin="0 0 8 8"/>
+            <xctk:WatermarkTextBox Text="{Binding Path=PaymentId, Mode=OneWayToSource}" Watermark="{Binding Path=TextHintOptional, Source={StaticResource Resources}}" FontFamily="Lucida Console" Margin="0 0 0 8"/>
+        </DockPanel>
+
+        <Button Grid.Row="3" Grid.Column="0" Click="ButtonAddRecipient_Click" Margin="0 0 8 0">
+            <controls:ImageTextComposition Text="{Binding Path=SendCoinsAddRecipient, Source={StaticResource Resources}}" ImageUri="/Resources/Images/Add.png"/>
+        </Button>
+        <Button Grid.Row="3" Grid.Column="1" Click="ButtonClearRecipients_Click" Margin="0 0 8 0">
+            <controls:ImageTextComposition Text="{Binding Path=SendCoinsClearRecipients, Source={StaticResource Resources}}" ImageUri="/Resources/Images/Delete.png"/>
+        </Button>
+
+        <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding Path=SendCoinsMixCount, Source={StaticResource Resources}}" VerticalAlignment="Center"/>
+        <xctk:IntegerUpDown Grid.Row="3" Grid.Column="5" Value="{Binding Path=MixCount}" Minimum="0"/>
+        <Separator Grid.Row="3" Grid.Column="6" Style="{StaticResource StyleSeparatorVertical}"/>
+
+        <TextBlock Grid.Row="3" Grid.Column="7" Text="{Binding Path=SendCoinsFee, Source={StaticResource Resources}}" VerticalAlignment="Center"/>
+        <xctk:DoubleUpDown Grid.Row="3" Grid.Column="9" Minimum="0.005" Value="{Binding Path=TransactionFee, Converter={StaticResource ConverterCoinAtomicValueToNullableDisplayValue}}" Style="{StaticResource StyleDoubleUpDownCoinAmount}"/>
+        <TextBlock Grid.Row="3" Grid.Column="11" Text="{Binding Path=TextCurrencyCode, Source={StaticResource Resources}}" VerticalAlignment="Center"/>
+        <Separator Grid.Row="3" Grid.Column="12" Style="{StaticResource StyleSeparatorVertical}"/>
+
+        <Button Grid.Row="3" Grid.Column="13" IsEnabled="{Binding Path=IsSendingEnabled}" Click="ButtonSend_Click">
+            <controls:ImageTextComposition Text="{Binding Path=TextSend, Source={StaticResource Resources}}" ImageUri="/Resources/Images/Send.png"/>
+        </Button>
+    </Grid>
+</UserControl>
