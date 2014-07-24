@@ -9,7 +9,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="{Binding Path=TextClientName, Source={StaticResource Resources}}"
         WindowStartupLocation="CenterScreen"
-        Width="950" Height="567" MinWidth="950" MinHeight="567"
+        Width="970" Height="567" MinWidth="970" MinHeight="567"
         Closing="MainWindow_Closing">
     <Window.CommandBindings>
         <CommandBinding x:Name="CommandBindingShowOrHideWindow" Command="windows:MainWindow.CommandShowOrHideWindow" Executed="CommandShowOrHideWindow_Executed"/>

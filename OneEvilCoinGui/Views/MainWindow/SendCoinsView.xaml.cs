@@ -92,7 +92,7 @@ namespace OneEvil.OneEvilCoinGUI.Views.MainWindow
             }
         }
 
-        private void ClearRecipients()
+        public void ClearRecipients()
         {
             ViewModel.Recipients.Clear();
             AddRecipient();
